@@ -1,41 +1,54 @@
-# 📡 Simulador de Modelos de Propagación de Ondas
+# Modelos de Propagación de Ondas
 
-Este proyecto es una aplicación de escritorio interactiva construida con **Python** y **CustomTkinter**, diseñada para calcular y visualizar pérdidas por propagación de señal usando distintos modelos como:
-
- ✅ COST-231 Hata  
- ✅ Egli  
- ✅ Walfisch-Ikegami  
- ✅ COST-231 Walfisch-Ikegami  
- ✅ Log-Normal
+![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
+![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ---
 
-## 🎯 Objetivo
+## 📡 Descripción
 
-Ofrecer una herramienta educativa y funcional para estudiantes y profesionales en el área de **telecomunicaciones**, que les permita analizar de forma visual y práctica los diferentes modelos de atenuación.
+Este proyecto implementa diversos **modelos de propagación de ondas** para telecomunicaciones, incluyendo:
 
----
+- COST-231 Hata  
+- Walfisch-Ikegami  
+- Egli  
+- Log-Normal  
+- Okumura  
 
-## 🖥️ Captura de la Interfaz
-
-![App Screenshot](screen.png)
-
----
-
-## ⚙️ Características
-
-- Interfaz moderna con `CustomTkinter`
-- Cálculos dinámicos por modelo
-- Preparado para extenderse con nuevos modelos
+La aplicación permite calcular pérdidas de propagación en diferentes escenarios, facilitando el análisis y comparación entre modelos. Está pensado para estudiantes, investigadores y profesionales que trabajan en diseño y análisis de redes inalámbricas.
 
 ---
 
-## 🧮 Fórmulas Implementadas
+## 🎯 Objetivos
 
-```txt
-Okumura-Hata:         PL(dB) = 69.55 + 26.16·log₁₀(f) − 13.82·log₁₀(hb) − a(hm) + [44.9 − 6.55·log₁₀(hb)]·log₁₀(d)
-COST-231 Hata:        PL(dB) = 46.3 + 33.9·log₁₀(f) − 13.82·log₁₀(hb) + [A(hm)] + (44.9 − 6.55·log₁₀(hb))·log₁₀(d) + C
-Egli:                 PL(dB) = 117 + 40·log₁₀(d) − 20·log₁₀(hb·hm) + 20·log₁₀(f)
-Walfisch-Ikegami:     PL(dB) = L₀ + Lᵣₜₛ + Lₘₛd
-COST-231 Walfisch:    PL(dB) = 42.6 + 26·log₁₀(d) + 20·log₁₀(f)
-Log-Normal:           PL(dB) = PL(d₀) + 10·n·log₁₀(d/d₀) + Xσ
+- Proporcionar una herramienta práctica para estudiar modelos de propagación.
+- Facilitar la comparación entre diferentes modelos mediante una interfaz gráfica amigable.
+- Permitir el análisis visual con gráficas y reportes automáticos.
+- Servir como base para aprender Python aplicado a telecomunicaciones y GUI.
+
+---
+
+## 🚀 Funcionalidades
+
+- Cálculo automático según modelo seleccionado.
+- Interfaz gráfica interactiva con CustomTkinter.
+- Soporte para distintas variables (frecuencia, distancia, altura, etc).
+- Validación básica de entradas.
+- Visualización de resultados en pantalla.
+
+---
+
+## 📸 Capturas de pantalla
+
+![Pantalla principal](./screen.png)
+
+---
+
+## 🛠 Instalación y uso
+
+1. Clona el repositorio:
+
+```bash
+git clone https://github.com/Yasmani-Vinamagua/modelos-propagacion-ondas.git
+cd modelos-propagacion-ondas
