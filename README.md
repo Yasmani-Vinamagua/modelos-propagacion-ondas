@@ -33,6 +33,7 @@ Ofrecer una herramienta educativa y funcional para estudiantes y profesionales e
 ## 🧮 Fórmulas Implementadas
 
 ```txt
+Okumura-Hata:         PL(dB) = 69.55 + 26.16·log₁₀(f) − 13.82·log₁₀(hb) − a(hm) + [44.9 − 6.55·log₁₀(hb)]·log₁₀(d)
 COST-231 Hata:        PL(dB) = 46.3 + 33.9·log₁₀(f) − 13.82·log₁₀(hb) + [A(hm)] + (44.9 − 6.55·log₁₀(hb))·log₁₀(d) + C
 Egli:                 PL(dB) = 117 + 40·log₁₀(d) − 20·log₁₀(hb·hm) + 20·log₁₀(f)
 Walfisch-Ikegami:     PL(dB) = L₀ + Lᵣₜₛ + Lₘₛd
