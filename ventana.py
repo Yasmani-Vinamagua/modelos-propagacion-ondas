@@ -2,6 +2,7 @@
 
 import customtkinter as ctk
 import estilos
+import os
 
 class VentanaApp:
     """Crea y maneja la ventana principal de la app"""
@@ -13,7 +14,9 @@ class VentanaApp:
         self.app.geometry("1200x744")  # Tamaño de la ventana ancho x alto
         self.app.resizable(False, False)  # Fija el tamaño de la ventana
         self.app.title("MODELTEC")  # Titulo de la ventana
-        self.app.iconbitmap("Marca_PersonalCirculo.ico")  # Modifica el icono de la ventana
+        # Definicmos q el icono esta en la misma ruta que el proyecto
+        self.ruta_icono = os.path.join(os.path.dirname(__file__),"Marca_PersonalCirculo.ico")
+        self.app.iconbitmap(self.ruta_icono)  # Modifica el icono de la ventana
 
         # Estructura de la ventana
         self.app.grid_columnconfigure(0, weight=1)  # La columna 0 ocupa 1 parte de la ventana
