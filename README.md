@@ -62,7 +62,7 @@ pip install -r requirements.txt
 python "modulos python/main.py"
 ```
 
-> `requirements.txt` fija `customtkinter 5.2.0` y `numpy 1.24.3`, que requieren una versión de Python compatible (3.10 a 3.11 para esa versión de numpy). La aplicación y sus pruebas también se ejecutaron con Python 3.14, customtkinter 6 y numpy 2.
+> `requirements.txt` usa rangos de versiones (`customtkinter` 5.2 a 6.x, `numpy` 1.24 o superior, `pytest` 7.4 o superior), así que `pip` elige las que funcionan con tu versión de Python. Probado con Python 3.14 (customtkinter 6.0.0, numpy 2.5.4, pytest 9.2.0) y la interfaz también con customtkinter 5.2.2.
 
 ---
 
