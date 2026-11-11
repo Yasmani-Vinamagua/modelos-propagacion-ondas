@@ -1,10 +1,32 @@
 """Aqui se describen los estilos de la app"""
 
+import os
+
 import customtkinter as ctk
+
+RUTA_FUENTES = os.path.join(os.path.dirname(__file__), "fuentes")
+_fuentes_cargadas = False
+
+
+def registrar_fuentes():
+    """Registra Montserrat desde la carpeta del proyecto, para que no dependa de que esté instalada.
+
+    En sistemas donde customtkinter no puede cargar fuentes (macOS) se usa la instalada o una de reemplazo.
+    """
+    global _fuentes_cargadas
+    if _fuentes_cargadas:
+        return
+    _fuentes_cargadas = True
+    for archivo in ("Montserrat-Regular.ttf", "Montserrat-Bold.ttf"):
+        ruta = os.path.join(RUTA_FUENTES, archivo)
+        if os.path.exists(ruta):
+            ctk.FontManager.load_font(ruta)
 
 
 def cargar_fuentes():
     """Función para cargar las fuentes (solo se debe llamar después de crear la app CTk)"""
+
+    registrar_fuentes()
 
     # Tipografía y pesos
     return {
@@ -12,8 +34,17 @@ def cargar_fuentes():
         "h2": ctk.CTkFont(family="Montserrat", size=20, weight="bold"),
         "h3": ctk.CTkFont(family="Montserrat", size=18, weight="bold"),
         "text_resalt": ctk.CTkFont(family="Montserrat", size=16, weight="bold"),
-        "text": ctk.CTkFont(family="Montserrat", size=16, weight="normal")
+        "text": ctk.CTkFont(family="Montserrat", size=16, weight="normal"),
+        "small": ctk.CTkFont(family="Montserrat", size=13, weight="normal")
     }
+
+
+# Colores de la validación (contraste mínimo 4.5:1 sobre el gris #D9D9D9 del panel)
+color_primario = "#3C4E99"  # Azul de la barra lateral
+color_primario_oscuro = "#2F3E7A"
+ancho_etiquetas = 290  # Ancho de la columna de etiquetas del formulario
+color_error = "#B00020"
+color_ayuda = "#555555"
 
 
 

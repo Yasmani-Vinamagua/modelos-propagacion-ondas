@@ -9,7 +9,10 @@ from mod_walfisch import Walfisch
 from mod_costwalfisch import COSTWalfisch
 from mod_egli import Egli
 from mod_log import Log
+from modelo_base import unidad_de
 
+
+estilos.registrar_fuentes() #Carga Montserrat desde la carpeta fuentes antes de crear la ventana
 
 app = VentanaApp()
 
@@ -20,11 +23,12 @@ ecuaciones = {
     "COST-231 Hata": "PL(dB) = 46.3 + 33.9·log₁₀(f) − 13.82·log₁₀(hb) − a(hm) + [44.9 − 6.55·log₁₀(hb)]·log₁₀(d) + C",
     "Walfisch-Ikegami": "PL(dB) = L₀ + Lᵣₜₛ + Lₘₛd",
     "COST-231 Walfisch-Ikegami": "PL(dB) = 42.6 + 26·log₁₀(d) + 20·log₁₀(f)",
-    "Modelo Egli": "PL(dB) = 117 + 40·log₁₀(d) − 20·log₁₀(hb·hm) + 20·log₁₀(f)",
+    "Modelo Egli": "PL(dB) = K + 20·log₁₀(f) + 40·log₁₀(d) − 20·log₁₀(ht) − a·log₁₀(hr)\nhr ≤ 10 m: K = 76.3, a = 10   |   hr > 10 m: K = 85.9, a = 20",
     "Log-Normal": "PL(dB) = PL(d₀) + 10·n·log₁₀(d/d₀) + Xσ"
 }
 
 modelos = list(ecuaciones.keys()) #Genera una lista con los nombres de los modelos
+botones_modelo = {} #Botones del menú lateral, por nombre de modelo
 
 
 def ventana_izquierda():
@@ -41,6 +45,19 @@ def ventana_izquierda():
                                   **estilos.estilo_boton_modelo, #Lee el diccionario de estilo
                                   command=lambda mod=modelo: ventana_derecha(mod)) #Obtiene el modelo al hacer click
         buton_izq.pack(padx=32, pady=20)
+        botones_modelo[modelo] = buton_izq
+
+
+def resaltar_modelo_activo(activo):
+    """Marca en el menú lateral el modelo que se está viendo"""
+
+    for modelo, boton in botones_modelo.items():
+        if modelo == activo:
+            boton.configure(fg_color="#FFFFFF", border_color="#E88C0C", border_width=3)
+        else:
+            boton.configure(fg_color=estilos.estilo_boton_modelo["fg_color"],
+                            border_color=estilos.estilo_boton_modelo["border_color"],
+                            border_width=estilos.estilo_boton_modelo["border_width"])
 
 
 def limpiar_frames_derecha():
@@ -63,7 +80,7 @@ def ventana_derecha(mod):
 
     #Título del modelo seleccionado
     titulo_modelo = ctk.CTkLabel(app.frame_titulo,
-                                 text=f"Modelo {mod}",
+                                 text=mod if mod.startswith("Modelo") else f"Modelo {mod}",
                                  text_color="black",
                                  font=fuentes["h2"]
                                  )
@@ -92,8 +109,7 @@ def ventana_derecha(mod):
         modelo_actual = clase_modelo(app.frame_inputs, app.frame_OptionMenu)
         #Se llama al metodo para crear el menu desplegable
         modelo_actual.menu()
-        #Se llama al metodo para crear los inputs del modelo de propagación
-        modelo_actual.inputs(modelo_actual.list_menu[0]) #Se le pasa el valor por defecto del menú para la primera vez
+        resaltar_modelo_activo(mod)
 
         # Limpiar resultados
         for widget in app.frame_resultados.winfo_children():
@@ -101,25 +117,36 @@ def ventana_derecha(mod):
 
         # Mostrar resultado de la operación
         label_resultado = ctk.CTkLabel(app.frame_resultados,
-                                       text=modelo_actual.seleccion_modelo,
+                                       text="",
                                        text_color="black",
                                        font=fuentes["text"])
         label_resultado.grid(row=0, column=0, **estilos.pad_result)
 
         resultado = ctk.CTkLabel(app.frame_resultados,
-                                 text=f"{modelo_actual.operacion}",
+                                 text="—",
                                  text_color="black",
-                                 font=fuentes["text_resalt"])
+                                 font=fuentes["h1"])
         resultado.grid(row=1, column=0, **estilos.pad_result)
 
-        def calcular_mostrar():
+        def mostrar_vacio():
+            """Antes de calcular (o al cambiar de variable) no se muestra ningún número"""
+            label_resultado.configure(text=f"Resultado: {modelo_actual.seleccion_modelo}")
+            resultado.configure(text="—")
+
+        mostrar_vacio()
+        modelo_actual.al_cambiar = mostrar_vacio
+
+        def calcular_mostrar(evento=None):
 
             #Ejecuta el calculo con los datos ingresados
-            modelo_actual.calculo()
+            #Si la validación falla (dato inválido o fuera de rango) no se actualiza el resultado
+            if modelo_actual.calculo() is False:
+                return
 
-            #Actualiza los label con el cálculo realizado
-            label_resultado.configure(text=modelo_actual.seleccion_modelo)
-            resultado.configure(text=f"{modelo_actual.operacion:.2f}")
+            #Actualiza los label con el cálculo realizado, con su unidad
+            unidad = unidad_de(modelo_actual.seleccion_modelo)
+            label_resultado.configure(text=f"Resultado: {modelo_actual.seleccion_modelo}")
+            resultado.configure(text=f"{modelo_actual.operacion:.2f} {unidad}".strip())
 
 
         # Boton de calcular
@@ -128,6 +155,9 @@ def ventana_derecha(mod):
                                       **estilos.estilo_boton_calcular,
                                       command=calcular_mostrar)  # Se llama a la funcion calculo del modelo actual
         buton_cal.grid(row=0, column=0, padx=32, pady=5, sticky="w")
+
+        # Enter también calcula (el bind reemplaza al de la vista anterior)
+        app.app.bind("<Return>", calcular_mostrar)
 
 
 ventana_izquierda()
