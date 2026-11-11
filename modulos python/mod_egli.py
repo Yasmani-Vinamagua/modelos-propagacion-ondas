@@ -1,128 +1,54 @@
-import customtkinter as ctk
+"""Modelo Egli (f en MHz, d en km, alturas en m)
+
+    PL = K + 20·log f + 40·log d − 20·log ht − a·log hr
+    hr <= 10 m -> K = 76.3, a = 10        hr > 10 m -> K = 85.9, a = 20
+"""
+
 import numpy as np
-import estilos
-from error import VentanaError
 
-app = ctk.CTk()
-
-fuentes = estilos.cargar_fuentes() #Se llama a la funcion q tiene el diccionario de fuentes
-
-class Egli:
-
-    def __init__(self, frame_inputs, frame_OptionMenu):
-        self.frame_OptionMenu = frame_OptionMenu
-        self.frame_inputs = frame_inputs
-
-        self.operacion = 0.00
-
-        self.valores = {} # Creamos una lista para almacenar los datos del input
-
-        self.var_egli = {
-            "Frecuencia (MHz)": (30, 3000, "Frecuencia (f) entre 30-3000 MHz"),
-            "Altura antena base (m)": (3, 200, "Altura antena base (hb) entre 3-200 m"),
-            "Altura antena móvil (m)": (1, 10, "Altura antena móvil (hm) entre 1-10 m"),
-            "Distancia (Km)": (0.1, 20, "Distancia (d) entre 0.1-20 Km"),
-            "Perdida (dB)": (0, 0, "Ingrese la pérdida (PL)")
-        }
-
-        self.list_menu = list(self.var_egli.keys())  # Opciones de cálculo modelo egli
-
-        self.entradas_egli = []  # Lista para guardar los imputs del modelo egli
+from modelo_base import ModeloBase
 
 
-    def menu(self):
-
-        # Menú de opciones para modelo okomura
-        self.optionmenu = ctk.StringVar(value=self.list_menu[0])
-        self.optionegli = ctk.CTkOptionMenu(self.frame_OptionMenu,
-                                             values=self.list_menu,
-                                             variable=self.optionmenu,
-                                             width=250, height=30,
-                                             command= self.inputs) #cada vez que el usuario cambia la selección,
-        # se llama automáticamente a la función inputs pasando el valor seleccionado como argumento.
-        self.optionegli.grid(padx=32, pady=5)
-
-        self.inputs(self.list_menu[0]) #Llama a la funcion inputs por primera vez para mostrar los inputs de la primera opción al cargar la interfaz por defecto.
+def constantes(hr):
+    """Devuelve (K, a) según la altura de la antena receptora."""
+    return (76.3, 10) if hr <= 10 else (85.9, 20)
 
 
-    #Entradas del modelo egli
-    def inputs(self, seleccion):
+class Egli(ModeloBase):
 
-        self.seleccion_modelo = seleccion #Guarda el valor seleccionado del menú
+    variables = {
+        "Frecuencia (MHz)": (30, 3000, "Frecuencia (f) entre 30-3000 MHz"),
+        "Altura antena transmisora (m)": (3, 200, "Altura antena transmisora (ht) entre 3-200 m"),
+        "Altura antena receptora (m)": (1, 50, "Altura antena receptora (hr) entre 1-50 m"),
+        "Distancia (km)": (0.1, 20, "Distancia (d) entre 0.1-20 km"),
+        "Pérdida (dB)": (0, 0, "Ingrese la pérdida (PL)"),
+    }
 
-        # Limpiar todos los inputs
-        for widget in self.frame_inputs.winfo_children():
-            widget.destroy()
+    def calcular(self, v):
+        f = v.get("Frecuencia (MHz)")
+        ht = v.get("Altura antena transmisora (m)")
+        hr = v.get("Altura antena receptora (m)")
+        d = v.get("Distancia (km)")
+        pl = v.get("Pérdida (dB)")
 
-        self.entradas_egli.clear()
+        sel = self.seleccion_modelo
 
-        fila = 0
+        if sel == "Altura antena receptora (m)":
+            # La constante depende de hr, que es la incógnita: se prueba primero hr <= 10 m
+            base = 20 * np.log10(f) + 40 * np.log10(d) - 20 * np.log10(ht) - pl
+            hr_bajo = 10 ** ((76.3 + base) / 10)
+            return hr_bajo if hr_bajo <= 10 + 1e-9 else 10 ** ((85.9 + base) / 20)
 
-        # Genera los labels e Imputs del modelo
-        for self.variable in self.list_menu:
-            if self.seleccion_modelo != self.variable: #Si el valor del menu seleccionado es diferente a la lista de opciones imprime
+        K, a = constantes(hr)
 
-                self.label_egli = ctk.CTkLabel(self.frame_inputs, text=self.variable, text_color="black", font=fuentes["text_resalt"])
-                self.label_egli.grid(row=fila, column=0,**estilos.pad_labels)
+        if sel == "Frecuencia (MHz)":
+            return 10 ** ((pl - K - 40 * np.log10(d) + 20 * np.log10(ht) + a * np.log10(hr)) / 20)
 
-                self.in_egli = ctk.CTkEntry(self.frame_inputs, width=estilos.ancho_inputs,
-                                               placeholder_text=self.var_egli[self.variable][2], #Imprimer de la lista de var_egli[key][item]
-                                          font=fuentes["text"])
-                self.in_egli.grid(row=fila, column=1,**estilos.pad_inputs)
+        if sel == "Altura antena transmisora (m)":
+            return 10 ** ((K + 20 * np.log10(f) + 40 * np.log10(d) - a * np.log10(hr) - pl) / 20)
 
-                self.entradas_egli.append(self.in_egli)  # Almacenamos los imputs en una lista
+        if sel == "Distancia (km)":
+            return 10 ** ((pl - K - 20 * np.log10(f) + 20 * np.log10(ht) + a * np.log10(hr)) / 40)
 
-            fila += 1
-
-    #Calculo de variables
-    def calculo(self):
-
-        #Refrescamos los valores
-        self.valores.clear()
-        self.operacion = 0
-
-        variables = [v for v in self.list_menu if v != self.seleccion_modelo] #Generamos una lista con todas las variables menos la seleccionada
-
-        for nombre_variable, entrada in zip(variables, self.entradas_egli): #Asosiamos cada nombre de variable con su valor ingresado
-
-            try:
-                self.valor = float(entrada.get()) #Covertimos cada valor ingresado en un float
-
-                min_val, max_val, _ = self.var_egli[nombre_variable]
-
-                if min_val !=0 or max_val!=0: #Evitar validar aquellas variables q no tienen rango como a(hm) o pl
-                    if not (min_val <= self.valor <= max_val):
-                        VentanaError(app) #Valor fuera del rango lanza pantalla error
-
-                self.valores[nombre_variable] = self.valor #Creamos un diccionario con cada nombre variable y float ingresado
-
-            except ValueError:
-                self.valores[nombre_variable] = None #Si se ingresa otro valor q no sea numerico se llena con un None
-
-        if None in self.valores.values():
-            return VentanaError(app) #Si existe un valor none en valores{} lanza la ventana de error
-
-        f = self.valores.get("Frecuencia (MHz)")
-        hb = self.valores.get("Altura antena base (m)")
-        hm = self.valores.get("Altura antena móvil (m)")
-        d = self.valores.get("Distancia (Km)")
-        pl = self.valores.get("Perdida (dB)")
-
-
-        # Evalúa cada opción de cálculo del modelo egli
-        if self.seleccion_modelo == "Frecuencia (MHz)":
-            self.operacion = 10 ** ((pl - 117 - 40 * np.log10(d) + 20 * np.log10(hb * hm)) / 20)
-
-        elif self.seleccion_modelo == "Altura antena base (m)":
-            producto = 10 ** ((pl - 117 - 40 * np.log10(d) - 20 * np.log10(f)) / -20)
-            self.operacion = producto / hm
-
-        elif self.seleccion_modelo == "Altura antena móvil (m)":
-            producto = 10 ** ((pl - 117 - 40 * np.log10(d) - 20 * np.log10(f)) / -20)
-            self.operacion = producto / hb
-
-        elif self.seleccion_modelo == "Distancia (Km)":
-            self.operacion = 10 ** ((pl - 117 + 20 * np.log10(hb * hm) - 20 * np.log10(f)) / 40)
-
-        elif self.seleccion_modelo == "Perdida (dB)":
-            self.operacion = 117 + 40 * np.log10(d) - 20 * np.log10(hb * hm) + 20 * np.log10(f)
+        if sel == "Pérdida (dB)":
+            return K + 20 * np.log10(f) + 40 * np.log10(d) - 20 * np.log10(ht) - a * np.log10(hr)
