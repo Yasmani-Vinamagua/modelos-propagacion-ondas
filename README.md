@@ -45,6 +45,8 @@ Notas:
 - Acepta la coma decimal (`1,5`).
 - Validación dentro del formulario: el campo con problema se marca en rojo con el motivo y el rango válido; bajo cada campo se muestra su rango como ayuda.
 - Aviso claro cuando un cálculo no es posible (por ejemplo, una división entre cero).
+- Interfaz con estilo **liquid glass**: fondo líquido y paneles de vidrio esmerilado con reflejos de luz, dibujados con Pillow y numpy.
+- Colores de la paleta de marca (Azul marino, Rosa, Medianoche, Niebla…). Todos los textos cumplen contraste WCAG AA (≥ 4,5:1; el botón Calcular, con texto grande, 3,8:1).
 - Tipografía Montserrat incluida en el proyecto (no hace falta instalarla).
 
 ---
@@ -62,7 +64,7 @@ pip install -r requirements.txt
 python "modulos python/main.py"
 ```
 
-> `requirements.txt` usa rangos de versiones (`customtkinter` 5.2 a 6.x, `numpy` 1.24 o superior, `pytest` 7.4 o superior), así que `pip` elige las que funcionan con tu versión de Python. Probado con Python 3.14 (customtkinter 6.0.0, numpy 2.5.4, pytest 9.2.0) y la interfaz también con customtkinter 5.2.2.
+> `requirements.txt` usa rangos de versiones (`customtkinter` 5.2 a 6.x, `numpy` 1.24 o superior, `pillow` 10 o superior, `pytest` 7.4 o superior), así que `pip` elige las que funcionan con tu versión de Python. Probado con Python 3.14 (customtkinter 6.0.0, numpy 2.5.4, pytest 9.2.0) y la interfaz también con customtkinter 5.2.2.
 
 ---
 
@@ -94,8 +96,9 @@ El archivo queda en `dist/MODELTEC.exe` (~24 MB). Incluye la tipografía y el ic
 ```
 modulos python/
 ├── main.py            Ventana principal y navegación entre modelos
-├── ventana.py         Distribución de la ventana
-├── estilos.py         Colores, fuentes y estilos de los widgets
+├── ventana.py         Ventana: fondo, paneles de vidrio y marcos de contenido
+├── estilos.py         Paleta de marca, fuentes y estilos de los widgets
+├── vidrio.py          Efecto liquid glass: fondo líquido y paneles de vidrio
 ├── modelo_base.py     Clase base: menú, formulario, validación y errores
 ├── mod_*.py           Un archivo por modelo (variables y fórmula)
 └── fuentes/           Montserrat (licencia SIL OFL 1.1)

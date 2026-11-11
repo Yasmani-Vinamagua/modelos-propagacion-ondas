@@ -34,9 +34,14 @@ botones_modelo = {} #Botones del menú lateral, por nombre de modelo
 def ventana_izquierda():
     """Agrega todos los elementos de la parte izquierda de la ventana"""
 
-    # Nombre de la aplicacion
-    nom_app = ctk.CTkLabel(app.frame_nombre, text="MODELTEC", text_color="white", font=fuentes["h1"])
-    nom_app.pack(padx=0, pady=32)
+    # Nombre de la aplicacion, con la barra rosa corta de firma debajo
+    nom_app = ctk.CTkLabel(app.frame_nombre, text="MODELTEC", text_color=estilos.color_texto, font=fuentes["h1"])
+    nom_app.pack(anchor="w", padx=6, pady=(14, 0))
+    subtitulo = ctk.CTkLabel(app.frame_nombre, text="Modelos de propagación", text_color=estilos.color_ayuda,
+                             font=fuentes["small"], anchor="w")
+    subtitulo.pack(anchor="w", padx=8, pady=(0, 10))
+    barra = ctk.CTkFrame(app.frame_nombre, width=40, height=4, corner_radius=2, fg_color=estilos.ROSA)
+    barra.pack(anchor="w", padx=8, pady=(0, 28))
 
     #Generar los botones de modelos
     for modelo in modelos:
@@ -44,20 +49,18 @@ def ventana_izquierda():
                                   text=modelo,
                                   **estilos.estilo_boton_modelo, #Lee el diccionario de estilo
                                   command=lambda mod=modelo: ventana_derecha(mod)) #Obtiene el modelo al hacer click
-        buton_izq.pack(padx=32, pady=20)
+        buton_izq.pack(pady=(0, 18))
         botones_modelo[modelo] = buton_izq
 
 
 def resaltar_modelo_activo(activo):
     """Marca en el menú lateral el modelo que se está viendo"""
 
+    reposo = {clave: estilos.estilo_boton_modelo[clave]
+              for clave in ("fg_color", "hover_color", "text_color", "border_color", "border_width")}
+
     for modelo, boton in botones_modelo.items():
-        if modelo == activo:
-            boton.configure(fg_color="#FFFFFF", border_color="#E88C0C", border_width=3)
-        else:
-            boton.configure(fg_color=estilos.estilo_boton_modelo["fg_color"],
-                            border_color=estilos.estilo_boton_modelo["border_color"],
-                            border_width=estilos.estilo_boton_modelo["border_width"])
+        boton.configure(**(estilos.estilo_boton_modelo_activo if modelo == activo else reposo))
 
 
 def limpiar_frames_derecha():
@@ -81,15 +84,15 @@ def ventana_derecha(mod):
     #Título del modelo seleccionado
     titulo_modelo = ctk.CTkLabel(app.frame_titulo,
                                  text=mod if mod.startswith("Modelo") else f"Modelo {mod}",
-                                 text_color="black",
-                                 font=fuentes["h2"]
-                                 )
-    titulo_modelo.pack(padx=32, pady=(32,10))
+                                 text_color=estilos.color_texto,
+                                 font=fuentes["h2"],
+                                 anchor="w")
+    titulo_modelo.pack(fill="x", padx=8, pady=(4, 4))
 
     # Formula del modelo
-    formula_oku = ctk.CTkLabel(app.frame_formula, text=ecuaciones[mod], text_color="black",
-                               font=fuentes["text_resalt"])  # Rempalazar variable del txt por el boton seleccionado
-    formula_oku.grid(padx=32, pady=10)
+    formula_oku = ctk.CTkLabel(app.frame_formula, text=ecuaciones[mod], text_color=estilos.color_ayuda,
+                               font=fuentes["text_resalt"], anchor="w", justify="left", wraplength=730)
+    formula_oku.pack(fill="x", padx=8, pady=(0, 8))
 
     # Llama a la funcion del modelo seleccionado
     clases_modelos = {
@@ -115,18 +118,29 @@ def ventana_derecha(mod):
         for widget in app.frame_resultados.winfo_children():
             widget.destroy()
 
-        # Mostrar resultado de la operación
-        label_resultado = ctk.CTkLabel(app.frame_resultados,
-                                       text="",
-                                       text_color="black",
-                                       font=fuentes["text"])
-        label_resultado.grid(row=0, column=0, **estilos.pad_result)
+        # Mostrar resultado de la operación: barra rosa de firma y, a su lado, el texto
+        app.frame_resultados.grid_columnconfigure(1, weight=1)
+        app.frame_resultados.grid_rowconfigure(0, weight=1)
+        barra_resultado = ctk.CTkFrame(app.frame_resultados, width=4, height=58, corner_radius=2,
+                                       fg_color=estilos.ROSA)
+        barra_resultado.grid(row=0, column=0, padx=(8, 14), sticky="w")
 
-        resultado = ctk.CTkLabel(app.frame_resultados,
+        texto_resultado = ctk.CTkFrame(app.frame_resultados, fg_color="transparent", corner_radius=0)
+        texto_resultado.grid(row=0, column=1, sticky="w")
+
+        label_resultado = ctk.CTkLabel(texto_resultado,
+                                       text="",
+                                       text_color=estilos.color_ayuda,
+                                       font=fuentes["text"],
+                                       anchor="w")
+        label_resultado.pack(anchor="w")
+
+        resultado = ctk.CTkLabel(texto_resultado,
                                  text="—",
-                                 text_color="black",
-                                 font=fuentes["h1"])
-        resultado.grid(row=1, column=0, **estilos.pad_result)
+                                 text_color=estilos.color_texto,
+                                 font=fuentes["resultado"],
+                                 anchor="w")
+        resultado.pack(anchor="w")
 
         def mostrar_vacio():
             """Antes de calcular (o al cambiar de variable) no se muestra ningún número"""
@@ -154,7 +168,7 @@ def ventana_derecha(mod):
                                       text="Calcular",
                                       **estilos.estilo_boton_calcular,
                                       command=calcular_mostrar)  # Se llama a la funcion calculo del modelo actual
-        buton_cal.grid(row=0, column=0, padx=32, pady=5, sticky="w")
+        buton_cal.pack(anchor="w", padx=8, pady=(6, 0))
 
         # Enter también calcula (el bind reemplaza al de la vista anterior)
         app.app.bind("<Return>", calcular_mostrar)
