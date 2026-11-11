@@ -76,6 +76,19 @@ Las pruebas no abren ventanas. Comprueban cada modelo (valores de referencia cal
 
 ---
 
+## 📦 Ejecutable para Windows
+
+Se puede generar un único `MODELTEC.exe` que funciona sin tener Python instalado:
+
+```bash
+pip install pyinstaller
+python -m PyInstaller MODELTEC.spec
+```
+
+El archivo queda en `dist/MODELTEC.exe` (~24 MB). Incluye la tipografía y el icono. Al ser de un solo archivo, tarda unos segundos en abrir la primera vez.
+
+---
+
 ## 🗂 Estructura
 
 ```
