@@ -1,62 +1,51 @@
-# Modelos de Propagación de Ondas
 
-![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
-![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+# 📡 MODELTEC
 
----
+### Calculadora de modelos de propagación de ondas de radio
 
-## 📡 Descripción
+Aplicación de escritorio desarrollada en **Python** para calcular
+y analizar las pérdidas de propagación de señales inalámbricas
+mediante seis modelos matemáticos.
 
-**MODELTEC** es una aplicación de escritorio en Python que calcula la **pérdida de trayecto** (*path loss*) de una señal de radio con seis modelos de propagación usados en telecomunicaciones. Pensada para estudiantes, investigadores y profesionales que trabajan en diseño y análisis de redes inalámbricas.
+Diseñada para estudiantes, docentes e ingenieros de
+telecomunicaciones.
 
-Además de calcular la pérdida (PL), cada modelo permite **despejar cualquier otra variable** (frecuencia, distancia, altura de antena…) a partir de la pérdida conocida.
-
-![Pantalla principal](./screen.png)
-
----
-
-## 📶 Modelos incluidos
-
-| Modelo | Fórmula | Rango de validez en la app |
-|---|---|---|
-| **Okumura-Hata** | `69.55 + 26.16·log f − 13.82·log hb − a(hm) + (44.9 − 6.55·log hb)·log d` | f 150–1500 MHz · hb 30–200 m · d 1–20 km |
-| **COST-231 Hata** | `46.3 + 33.9·log f − 13.82·log hb − a(hm) + (44.9 − 6.55·log hb)·log d + C` | f 1500–2000 MHz · hb 30–200 m · d 1–20 km · C 0–3 dB |
-| **Walfisch-Ikegami** | `PL = L₀ + Lᵣₜₛ + Lₘₛd` | Suma de los tres términos (los ingresa el usuario) |
-| **COST-231 Walfisch-Ikegami** (línea de vista) | `42.6 + 26·log d + 20·log f` | f 800–2000 MHz · d 0.02–5 km |
-| **Egli** | `K + 20·log f + 40·log d − 20·log ht − a·log hr` | f 30–3000 MHz · ht 3–200 m · hr 1–50 m · d 0.1–20 km |
-| **Log-Normal** | `PL(d₀) + 10·n·log(d/d₀) + Xσ` | d₀ 0.01–1 km · d 0.01–20 km · n 1–6 · Xσ ±20 dB |
-
-Notas:
-
-- Todos los logaritmos son de base 10. Frecuencia en MHz, distancias en km, alturas en m, pérdidas en dB.
-- **Egli:** hr ≤ 10 m → K = 76.3 y a = 10; hr > 10 m → K = 85.9 y a = 20. (La constante 117 corresponde a la formulación original en millas y pies.)
-- **Okumura-Hata y COST-231 Hata:** `a(hm)` (corrección por altura del receptor) se ingresa como dato.
-- **COST-231 Hata:** C = 0 dB para ciudades medianas y suburbios, 3 dB para centros metropolitanos.
-- **Log-Normal:** `Xσ` es un valor que ingresa el usuario, no se genera aleatoriamente.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![CustomTkinter](https://img.shields.io/badge/GUI-CustomTkinter-1f6feb)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
-## 🚀 Funcionalidades
+## 🖥️ Vista previa
 
-- Seis modelos de propagación con su fórmula a la vista.
-- Selector **"Calcular:"** para elegir qué variable despejar (por defecto, la pérdida).
-- Resultado grande y con unidad (`126.35 dB`). **Enter** también calcula.
-- Acepta la coma decimal (`1,5`).
-- Validación dentro del formulario: el campo con problema se marca en rojo con el motivo y el rango válido; bajo cada campo se muestra su rango como ayuda.
-- Aviso claro cuando un cálculo no es posible (por ejemplo, una división entre cero).
-- Interfaz con estilo **liquid glass**: fondo líquido y paneles de vidrio esmerilado con reflejos de luz, dibujados con Pillow y numpy.
-- Colores de la paleta de marca (Azul marino, Rosa, Medianoche, Niebla…). Todos los textos cumplen contraste WCAG AA (≥ 4,5:1; el botón Calcular, con texto grande, 3,8:1).
-- Tipografía Montserrat incluida en el proyecto (no hace falta instalarla).
+![Interfaz de MODELTEC](screen.png)
 
----
+## ✨ Características
 
-## 🛠 Instalación y uso
+- 📡 **6 modelos de propagación** para el análisis de señales.
+- 🧮 **Cálculo inverso:** despeja frecuencia, distancia,
+  altura de antenas y otras variables compatibles.
+- 📊 **Resultados en tiempo real:** cálculos con unidades.
+- ✅ **Validación de parámetros:** rangos y errores claros.
+- 🎨 **Interfaz moderna:** diseño Liquid Glass.
+- 🖥️ **Aplicación de escritorio:** desarrollada con Python.
 
-Requisitos: **Python 3.10+** con `tkinter` (incluido en la instalación estándar de Python para Windows y macOS).
+## 📶 Modelos disponibles
+
+| Modelo | Aplicación principal |
+|---|---|
+| Okumura-Hata | Propagación en entornos urbanos y suburbanos |
+| COST-231 Hata | Redes celulares en bandas superiores |
+| Walfisch-Ikegami | Análisis de pérdidas por componentes |
+| COST-231 Walfisch-Ikegami LOS | Propagación con línea de vista |
+| Egli | Estimación empírica de pérdidas |
+| Log-Normal | Atenuación según distancia y variabilidad |
+
+## 🚀 Inicio rápido
 
 ```bash
 git clone https://github.com/Yasmani-Vinamagua/modelos-propagacion-ondas.git
+
 cd modelos-propagacion-ondas
 
 pip install -r requirements.txt
@@ -64,45 +53,4 @@ pip install -r requirements.txt
 python "modulos python/main.py"
 ```
 
-> `requirements.txt` usa rangos de versiones (`customtkinter` 5.2 a 6.x, `numpy` 1.24 o superior, `pillow` 10 o superior), así que `pip` elige las que funcionan con tu versión de Python. Probado con Python 3.14 (customtkinter 6.0.0, numpy 2.5.4) y la interfaz también con customtkinter 5.2.2.
-
----
-
-## 📦 Ejecutable para Windows
-
-Se puede generar un único `MODELTEC.exe` que funciona sin tener Python instalado:
-
-```bash
-pip install pyinstaller
-python -m PyInstaller MODELTEC.spec
-```
-
-El archivo queda en `dist/MODELTEC.exe` (~31 MB). Incluye la tipografía y el icono. Al ser de un solo archivo, tarda unos segundos en abrir la primera vez.
-
----
-
-## 🗂 Estructura
-
-```
-modulos python/
-├── main.py            Ventana principal y navegación entre modelos
-├── ventana.py         Ventana: fondo, paneles de vidrio y marcos de contenido
-├── estilos.py         Paleta de marca, fuentes y estilos de los widgets
-├── vidrio.py          Efecto liquid glass: fondo líquido y paneles de vidrio
-├── modelo_base.py     Clase base: menú, formulario, validación y errores
-├── mod_*.py           Un archivo por modelo (variables y fórmula)
-└── fuentes/           Montserrat (licencia SIL OFL 1.1)
-```
-
-### Agregar un modelo
-
-1. Crea `mod_nuevo.py` con una clase que herede de `ModeloBase`.
-2. Define `variables = {nombre: (mínimo, máximo, ayuda)}`. Con mínimo y máximo en 0, la variable no se valida (por ejemplo, la pérdida).
-3. Implementa `calcular(self, v)`: devuelve el valor de la variable que está en `self.seleccion_modelo`, usando las demás de `v`.
-4. Regístralo en `main.py` (ecuación y clase).
-
----
-
-## 📄 Licencia
-
-MIT © 2025 Yasmani Vinamagua (ver [`LICENSE`](./LICENSE)). La tipografía Montserrat se distribuye bajo la licencia SIL Open Font License 1.1 (`modulos python/fuentes/OFL.txt`).
+> Requiere Python 3.10 o superior y Tkinter.
