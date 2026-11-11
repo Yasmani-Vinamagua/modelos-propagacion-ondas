@@ -100,4 +100,4 @@ tests/                 Pruebas con pytest
 
 ## 📄 Licencia
 
-MIT, según la insignia de este repositorio. La tipografía Montserrat se distribuye bajo la licencia SIL Open Font License 1.1 (`modulos python/fuentes/OFL.txt`).
+MIT © 2025 Yasmani Vinamagua (ver [`LICENSE`](./LICENSE)). La tipografía Montserrat se distribuye bajo la licencia SIL Open Font License 1.1 (`modulos python/fuentes/OFL.txt`).
