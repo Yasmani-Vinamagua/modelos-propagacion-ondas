@@ -18,3 +18,6 @@ Thumbs.db
 # Ejecutable generado con PyInstaller
 build/
 dist/
+
+# Pruebas locales (no se suben al repositorio)
+tests/

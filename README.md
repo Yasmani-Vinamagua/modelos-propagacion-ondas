@@ -64,17 +64,7 @@ pip install -r requirements.txt
 python "modulos python/main.py"
 ```
 
-> `requirements.txt` usa rangos de versiones (`customtkinter` 5.2 a 6.x, `numpy` 1.24 o superior, `pillow` 10 o superior, `pytest` 7.4 o superior), así que `pip` elige las que funcionan con tu versión de Python. Probado con Python 3.14 (customtkinter 6.0.0, numpy 2.5.4, pytest 9.2.0) y la interfaz también con customtkinter 5.2.2.
-
----
-
-## 🧪 Pruebas
-
-```bash
-python -m pytest
-```
-
-Las pruebas no abren ventanas. Comprueban cada modelo (valores de referencia calculados aparte), que despejar cada variable devuelva el valor original y el comportamiento de la validación.
+> `requirements.txt` usa rangos de versiones (`customtkinter` 5.2 a 6.x, `numpy` 1.24 o superior, `pillow` 10 o superior), así que `pip` elige las que funcionan con tu versión de Python. Probado con Python 3.14 (customtkinter 6.0.0, numpy 2.5.4) y la interfaz también con customtkinter 5.2.2.
 
 ---
 
@@ -87,7 +77,7 @@ pip install pyinstaller
 python -m PyInstaller MODELTEC.spec
 ```
 
-El archivo queda en `dist/MODELTEC.exe` (~24 MB). Incluye la tipografía y el icono. Al ser de un solo archivo, tarda unos segundos en abrir la primera vez.
+El archivo queda en `dist/MODELTEC.exe` (~31 MB). Incluye la tipografía y el icono. Al ser de un solo archivo, tarda unos segundos en abrir la primera vez.
 
 ---
 
@@ -102,7 +92,6 @@ modulos python/
 ├── modelo_base.py     Clase base: menú, formulario, validación y errores
 ├── mod_*.py           Un archivo por modelo (variables y fórmula)
 └── fuentes/           Montserrat (licencia SIL OFL 1.1)
-tests/                 Pruebas con pytest
 ```
 
 ### Agregar un modelo
