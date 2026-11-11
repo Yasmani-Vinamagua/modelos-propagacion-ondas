@@ -66,27 +66,28 @@ class ModeloBase:
 
     def menu(self):
         """Crea el menú desplegable con la variable a calcular."""
-        etiqueta = ctk.CTkLabel(self.frame_OptionMenu, text="Calcular:", text_color="black",
+        etiqueta = ctk.CTkLabel(self.frame_OptionMenu, text="Calcular:", text_color=estilos.color_texto,
                                 font=self.fuentes["text_resalt"])
-        etiqueta.grid(row=0, column=0, padx=(32, 8), pady=5, sticky="w")
+        etiqueta.grid(row=0, column=0, padx=(8, 8), pady=5, sticky="w")
 
         self.optionmenu = ctk.StringVar(value=self.defecto)
         self.option_menu = ctk.CTkOptionMenu(self.frame_OptionMenu,
                                              values=self.list_menu,
                                              variable=self.optionmenu,
-                                             width=330, height=32,
+                                             width=340, height=34,
                                              font=self.fuentes["text"],
                                              dropdown_font=self.fuentes["text"],
-                                             # Colores de la app (blanco sobre azul: contraste ~8:1)
-                                             fg_color=estilos.color_primario,
-                                             button_color=estilos.color_primario_oscuro,
-                                             button_hover_color=estilos.color_primario_oscuro,
-                                             text_color="white",
-                                             dropdown_fg_color="white",
-                                             dropdown_text_color="black",
-                                             dropdown_hover_color="#E1F7FA",
+                                             corner_radius=16,
+                                             # Vidrio con texto blanco; lista desplegable en Medianoche
+                                             fg_color=estilos.VIDRIO_BOTON,
+                                             button_color=estilos.VIDRIO_HOVER,
+                                             button_hover_color=estilos.VIDRIO_HOVER,
+                                             text_color=estilos.BLANCO,
+                                             dropdown_fg_color=estilos.MEDIANOCHE,
+                                             dropdown_text_color=estilos.BLANCO,
+                                             dropdown_hover_color=estilos.AZUL_MARINO,
                                              command=self.inputs)  # Se llama al cambiar la selección
-        self.option_menu.grid(row=0, column=1, padx=(0, 32), pady=5, sticky="w")
+        self.option_menu.grid(row=0, column=1, padx=(0, 8), pady=5, sticky="w")
 
         # Muestra los inputs de la opción por defecto
         self.inputs(self.defecto)
@@ -114,7 +115,7 @@ class ModeloBase:
         self.error_general = ""
 
         # Columna de etiquetas de ancho fijo: las cajas quedan alineadas y las etiquetas largas se parten en dos líneas
-        self.frame_inputs.grid_columnconfigure(0, minsize=estilos.ancho_etiquetas + 40)
+        self.frame_inputs.grid_columnconfigure(0, minsize=estilos.ancho_etiquetas + 16)
 
         fila = 0
         for nombre in self.list_menu:
@@ -122,23 +123,31 @@ class ModeloBase:
                 continue
 
             # Cada variable ocupa dos filas: la caja y, debajo, su ayuda o error
-            etiqueta = ctk.CTkLabel(self.frame_inputs, text=nombre, text_color="black",
+            etiqueta = ctk.CTkLabel(self.frame_inputs, text=nombre, text_color=estilos.color_texto,
                                     font=self.fuentes["text_resalt"],
                                     width=estilos.ancho_etiquetas, wraplength=estilos.ancho_etiquetas,
                                     anchor="w", justify="left")
-            etiqueta.grid(row=fila, column=0, padx=(32, 8), pady=(8, 0), sticky="w")
+            etiqueta.grid(row=fila, column=0, padx=(8, 8), pady=(8, 0), sticky="w")
 
-            entrada = ctk.CTkEntry(self.frame_inputs, width=estilos.ancho_inputs,
+            entrada = ctk.CTkEntry(self.frame_inputs, width=estilos.ancho_inputs, height=34,
+                                   corner_radius=12, border_width=2,
+                                   fg_color=estilos.color_campo, border_color=estilos.color_campo,
+                                   text_color=estilos.color_campo_texto,
+                                   placeholder_text_color=estilos.color_campo_placeholder,
                                    placeholder_text=self.variables[nombre][2],
                                    font=self.fuentes["text"])
-            entrada.grid(row=fila, column=1, padx=(0, 32), pady=(8, 0), sticky="w")
-            self.borde_normal = entrada.cget("border_color")
+            entrada.grid(row=fila, column=1, padx=(0, 0), pady=(8, 0), sticky="w")
+            self.borde_normal = estilos.color_campo
 
             mensaje = ctk.CTkLabel(self.frame_inputs, text=self.rango_texto(nombre), height=16,
                                    text_color=estilos.color_ayuda, font=self.fuentes["small"])
-            mensaje.grid(row=fila + 1, column=1, padx=(6, 32), pady=0, sticky="w")
+            mensaje.grid(row=fila + 1, column=1, padx=(8, 0), pady=0, sticky="w")
             # Al escribir se quita el error de ese campo
             entrada.bind("<Key>", lambda evento, n=nombre: self._limpiar_error(n), add="+")
+            # Foco: borde rosa (los errores también lo dejan rosa hasta que se corrigen)
+            entrada.bind("<FocusIn>", lambda evento, e=entrada: e.configure(border_color=estilos.color_foco), add="+")
+            entrada.bind("<FocusOut>", lambda evento, e=entrada, n=nombre: e.configure(
+                border_color=estilos.color_error if n in self.errores else self.borde_normal), add="+")
 
             self.entradas.append(entrada)
             self.mensajes.append(mensaje)
@@ -146,8 +155,8 @@ class ModeloBase:
 
         # Mensaje para errores que no son de un solo campo (por ejemplo, una división entre cero)
         self.etiqueta_general = ctk.CTkLabel(self.frame_inputs, text="", height=18,
-                                             text_color=estilos.color_error, font=self.fuentes["small"])
-        self.etiqueta_general.grid(row=fila, column=0, columnspan=2, padx=32, pady=(6, 0), sticky="w")
+                                             text_color=estilos.color_texto, font=self.fuentes["text_resalt"])
+        self.etiqueta_general.grid(row=fila, column=0, columnspan=2, padx=8, pady=(6, 0), sticky="w")
 
     # ---------- errores dentro del formulario
 
@@ -157,7 +166,7 @@ class ModeloBase:
     def _marcar_error(self, indice, nombre, texto):
         self.errores[nombre] = texto
         self.entradas[indice].configure(border_color=estilos.color_error)
-        self.mensajes[indice].configure(text=texto, text_color=estilos.color_error)
+        self.mensajes[indice].configure(text=texto, text_color=estilos.color_texto, font=self.fuentes["small_negrita"])
 
     def _limpiar_error(self, nombre):
         """Quita el error de un campo y vuelve a mostrar su ayuda."""
@@ -166,7 +175,8 @@ class ModeloBase:
         del self.errores[nombre]
         indice = self._nombres_visibles().index(nombre)
         self.entradas[indice].configure(border_color=self.borde_normal)
-        self.mensajes[indice].configure(text=self.rango_texto(nombre), text_color=estilos.color_ayuda)
+        self.mensajes[indice].configure(text=self.rango_texto(nombre), text_color=estilos.color_ayuda,
+                                        font=self.fuentes["small"])
 
     def _limpiar_errores(self):
         for nombre in list(self.errores):
